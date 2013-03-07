@@ -949,7 +949,11 @@ static NSTimeInterval durationToAnimate(CGFloat pointsToAnimate, CGFloat velocit
                 
                 if ([other isKindOfClass:[CABasicAnimation class]]) {
                     anim = [CABasicAnimation animationWithKeyPath:@"shadowPath"];
+                    #if II_ARC_ENABLED
                     anim.fromValue = (__bridge id)[UIBezierPath bezierPathWithRect:[other.fromValue CGRectValue]].CGPath;
+                    #else
+                    anim.fromValue = (id)[UIBezierPath bezierPathWithRect:[other.fromValue CGRectValue]].CGPath;
+                    #endif
                     anim.duration = other.duration;
                     anim.timingFunction = other.timingFunction;
                     break;
