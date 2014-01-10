@@ -2133,11 +2133,37 @@ static NSTimeInterval durationToAnimate(CGFloat pointsToAnimate, CGFloat velocit
     }
 }
 
+#pragma mark - Center Navigation Controller
+
+- (UINavigationController*)centerNavigationController
+{
+    UINavigationController* navController = nil;
+    
+    if ([self.centerController isKindOfClass:[IIWrapController class]])
+    {
+        UIViewController *w = [((IIWrapController*)self.centerController) wrappedController];
+        navController = [w isKindOfClass:[UINavigationController class]] ? (UINavigationController*)w : w.navigationController;
+    }
+    else
+    {
+        navController = [self.centerController isKindOfClass:[UINavigationController class]] ? (UINavigationController*)self.centerController : self.centerController.navigationController;
+    }
+    
+    return navController;
+}
+
 #pragma mark - Panning
 
-- (BOOL)gestureRecognizerShouldBegin:(UIPanGestureRecognizer *)panner {
-    if (self.panningMode == IIViewDeckNavigationBarOrOpenCenterPanning && panner.view == self.slidingControllerView && [self isAnySideOpen])
-        return NO;
+- (BOOL)gestureRecognizerShouldBegin:(UIPanGestureRecognizer *)panner
+{
+    UINavigationController* navController = self.centerNavigationController;
+    
+    if (self.panningMode == IIViewDeckNavigationBarOrOpenCenterPanning && panner.view == self.slidingControllerView) {
+        CGPoint loc = [panner locationInView:navController.navigationBar];
+        
+        if (!CGRectContainsPoint(navController.navigationBar.bounds, loc) && ![self isAnySideOpen])
+            return NO;
+    }
     
     if (self.panningGestureDelegate && [self.panningGestureDelegate respondsToSelector:@selector(gestureRecognizerShouldBegin:)]) {
         BOOL result = [self.panningGestureDelegate gestureRecognizerShouldBegin:panner];
