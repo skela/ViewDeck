@@ -2965,6 +2965,40 @@ static NSTimeInterval durationToAnimate(CGFloat pointsToAnimate, CGFloat velocit
     }
 }
 
+#pragma mark - Status Bar
+
+- (UIViewController*)activeViewController
+{
+    UIViewController *vc = self.centerController;
+    if (self.leftController != nil && [self isSideOpen:IIViewDeckLeftSide])
+        vc = self.leftController;
+    if (self.rightController != nil && [self isSideOpen:IIViewDeckRightSide])
+        vc = self.rightController;
+    return vc;
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle
+{
+    UIViewController *vc = self.activeViewController;
+    if (vc != nil)
+        return vc.preferredStatusBarStyle ;
+    return UIStatusBarStyleDefault;
+}
+
+- (BOOL)prefersStatusBarHidden
+{
+    UIViewController *vc = self.activeViewController;
+    if (vc != nil)
+        return vc.prefersStatusBarHidden;
+    return NO;
+}
+
+- (void)refreshStatusBar
+{
+    SEL method = @selector(setNeedsStatusBarAppearanceUpdate);
+    if ([self respondsToSelector:method])
+        [self setNeedsStatusBarAppearanceUpdate];
+}
 
 @end
 
@@ -3078,7 +3112,6 @@ static const char* viewDeckControllerKey = "ViewDeckController";
 + (void)load {
     [self vdc_swizzle];
 }
-
 
 @end
 
