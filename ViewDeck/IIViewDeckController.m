@@ -2993,6 +2993,14 @@ static NSTimeInterval durationToAnimate(CGFloat pointsToAnimate, CGFloat velocit
     return NO;
 }
 
+- (UIStatusBarAnimation)preferredStatusBarUpdateAnimation
+{
+    UIViewController *vc = self.activeViewController;
+    if (vc != nil)
+        return vc.preferredStatusBarUpdateAnimation;
+    return UIStatusBarAnimationNone;
+}
+
 - (void)refreshStatusBar
 {
     SEL method = @selector(setNeedsStatusBarAppearanceUpdate);
